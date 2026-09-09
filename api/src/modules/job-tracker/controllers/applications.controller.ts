@@ -4,14 +4,31 @@ import { ApplicationsService } from '../services/applications.service';
 export class ApplicationsController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, companyId, source, sort } = req.query;
-      const applications = await ApplicationsService.getAll({
+      const { status, companyId, source, sort, page, limit } = req.query;
+
+      const pageNum = parseInt((page as string) || '1', 10);
+      const limitNum = parseInt((limit as string) || '20', 10);
+
+      if (isNaN(pageNum) || pageNum < 1) {
+        return res.status(400).json({ error: { message: 'Invalid page parameter', code: 'INVALID_PARAM' } });
+      }
+      if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+        return res.status(400).json({ error: { message: 'limit must be between 1 and 100', code: 'INVALID_PARAM' } });
+      }
+
+      const result = await ApplicationsService.getAll({
         status: status as any,
         companyId: companyId as string,
         source: source as any,
         sort: sort as string,
+        page: pageNum,
+        limit: limitNum,
       });
-      return res.status(200).json(applications);
+
+      const totalPages = Math.ceil(result.total / result.limit);
+      res.setHeader('X-Total-Count', result.total);
+      res.setHeader('X-Total-Pages', totalPages);
+      return res.status(200).json(result.data);
     } catch (err) {
       next(err);
     }

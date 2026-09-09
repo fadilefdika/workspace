@@ -40,7 +40,18 @@ export interface UpdateApplicationInput {
 }
 
 export class ApplicationsService {
-  static async getAll(query: { status?: ApplicationStatus; companyId?: string; source?: ApplicationSource; sort?: string }) {
+  static async getAll(query: {
+    status?: ApplicationStatus;
+    companyId?: string;
+    source?: ApplicationSource;
+    sort?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const skip = (page - 1) * limit;
+
     const where: any = { deletedAt: null };
     if (query.status) {
       where.status = query.status;
@@ -57,18 +68,23 @@ export class ApplicationsService {
     if (query.sort === 'applied_desc') orderBy = { appliedDate: 'desc' };
     if (query.sort === 'status') orderBy = { status: 'asc' };
 
-    const applications = await prisma.application.findMany({
-      where,
-      include: {
-        company: true,
-        interviewStages: {
-          orderBy: { createdAt: 'asc' },
+    const [applications, total] = await prisma.$transaction([
+      prisma.application.findMany({
+        where,
+        include: {
+          company: true,
+          interviewStages: {
+            orderBy: { createdAt: 'asc' },
+          },
         },
-      },
-      orderBy,
-    });
+        orderBy,
+        skip,
+        take: limit,
+      }),
+      prisma.application.count({ where }),
+    ]);
 
-    return applications;
+    return { data: applications, total, page, limit };
   }
 
   static async getById(id: string) {

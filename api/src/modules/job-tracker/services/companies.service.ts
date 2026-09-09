@@ -26,7 +26,11 @@ export interface UpdateCompanyInput {
 }
 
 export class CompaniesService {
-  static async getAll(query: { industry?: string; location?: string; priority?: Priority }) {
+  static async getAll(query: { industry?: string; location?: string; priority?: Priority; page?: number; limit?: number }) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+    const skip = (page - 1) * limit;
+
     const where: any = { deletedAt: null };
     if (query.industry) {
       where.industry = { contains: query.industry, mode: 'insensitive' };
@@ -38,20 +42,30 @@ export class CompaniesService {
       where.priority = query.priority;
     }
 
-    const companies = await prisma.company.findMany({
-      where,
-      include: {
-        _count: {
-          select: { applications: true },
+    const [companies, total] = await prisma.$transaction([
+      prisma.company.findMany({
+        where,
+        include: {
+          _count: {
+            select: { applications: true },
+          },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.company.count({ where }),
+    ]);
 
-    return companies.map((c: any) => ({
-      ...c,
-      applicationCount: c._count.applications,
-    }));
+    return {
+      data: companies.map((c: any) => ({
+        ...c,
+        applicationCount: c._count.applications,
+      })),
+      total,
+      page,
+      limit,
+    };
   }
 
   static async getBySlug(slug: string) {

@@ -1,6 +1,11 @@
 import { PrismaClient, Priority } from '@prisma/client';
 import { slugify } from '../../../shared/utils/slug';
 
+if (process.env.NODE_ENV === 'production') {
+  console.error('❌ Seed script tidak boleh dijalankan di production. Dibatalkan.');
+  process.exit(1);
+}
+
 const prisma = new PrismaClient();
 
 const initialCompanies = [

@@ -237,13 +237,13 @@ Base path: `/api/v1`
 
 ### Applications
 
-| Method | Endpoint            | Body / Query                                              | Response                                                                     |
-| ------ | ------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| GET    | `/applications`     | query: `status`, `companyId`, `source`, `sort` (opsional) | `200` array of Application (include `company`), hanya yang `deletedAt: null` |
-| POST   | `/applications`     | JSON body sesuai field model                              | `201` Application baru                                                       |
-| GET    | `/applications/:id` | —                                                         | `200` Application, `404` jika tidak ada/sudah dihapus                        |
-| PATCH  | `/applications/:id` | field yang diubah                                         | `200` Application terupdate                                                  |
-| DELETE | `/applications/:id` | —                                                         | `204` no content — soft delete, isi `deletedAt`, bukan hapus baris           |
+| Method | Endpoint            | Body / Query                                                                                       | Response                                                                                                                                  |
+| ------ | ------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/applications`     | query: `status`, `companyId`, `source`, `sort`, `page` (default 1), `limit` (default 20, maks 100) | `200` array of Application (include `company`), hanya yang `deletedAt: null`. Header `X-Total-Count`, `X-Total-Pages` untuk info paginasi |
+| POST   | `/applications`     | JSON body sesuai field model                                                                       | `201` Application baru                                                                                                                    |
+| GET    | `/applications/:id` | —                                                                                                  | `200` Application, `404` jika tidak ada/sudah dihapus                                                                                     |
+| PATCH  | `/applications/:id` | field yang diubah                                                                                  | `200` Application terupdate                                                                                                               |
+| DELETE | `/applications/:id` | —                                                                                                  | `204` no content — soft delete, isi `deletedAt`, bukan hapus baris                                                                        |
 
 ### Interview Stages (nested di bawah Applications)
 
@@ -261,14 +261,14 @@ Base path: `/api/v1`
 
 ### Companies
 
-| Method | Endpoint                        | Body / Query                                                                                    | Response                                                                           |
-| ------ | ------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| GET    | `/companies`                    | query: `industry`, `location`, `priority` (opsional)                                            | `200` array of Company (include jumlah applications), hanya yang `deletedAt: null` |
-| POST   | `/companies`                    | `name`, `industry?`, `location?`, `dealBreakers?`, dll — `slug` di-generate otomatis di backend | `201` Company baru                                                                 |
-| GET    | `/companies/:slug`              | —                                                                                               | `200` Company detail, `404` jika tidak ada/sudah dihapus                           |
-| PATCH  | `/companies/:slug`              | field yang diubah                                                                               | `200` Company terupdate                                                            |
-| DELETE | `/companies/:slug`              | —                                                                                               | `204` no content — soft delete                                                     |
-| GET    | `/companies/:slug/applications` | —                                                                                               | `200` array Application milik company ini (nested resource)                        |
+| Method | Endpoint                        | Body / Query                                                                                    | Response                                                                                                                                        |
+| ------ | ------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/companies`                    | query: `industry`, `location`, `priority`, `page` (default 1), `limit` (default 20, maks 100)   | `200` array of Company (include jumlah applications), hanya yang `deletedAt: null`. Header `X-Total-Count`, `X-Total-Pages` untuk info paginasi |
+| POST   | `/companies`                    | `name`, `industry?`, `location?`, `dealBreakers?`, dll — `slug` di-generate otomatis di backend | `201` Company baru                                                                                                                              |
+| GET    | `/companies/:slug`              | —                                                                                               | `200` Company detail, `404` jika tidak ada/sudah dihapus                                                                                        |
+| PATCH  | `/companies/:slug`              | field yang diubah                                                                               | `200` Company terupdate                                                                                                                         |
+| DELETE | `/companies/:slug`              | —                                                                                               | `204` no content — soft delete                                                                                                                  |
+| GET    | `/companies/:slug/applications` | —                                                                                               | `200` array Application milik company ini (nested resource)                                                                                     |
 
 ### Dashboard / Insights
 
@@ -286,6 +286,7 @@ Base path: `/api/v1`
 - Sukses: langsung kembalikan data (bukan dibungkus `{ data: ... }`) supaya sederhana untuk latihan.
 - Error: format konsisten `{ "error": { "message": string, "code": string } }` dengan HTTP status code yang sesuai (400 validasi, 404 not found, 500 server error).
 - Semua request/response body JSON. Validasi input pakai `zod` di layer middleware sebelum masuk controller.
+- **Paginasi**: endpoint list (`GET /applications`, `GET /companies`, dan endpoint list modul lain nanti) WAJIB mendukung `?page` & `?limit`, default `page=1` `limit=20`, dan menolak (400) kalau `limit` > 100. Info total data ada di response header (`X-Total-Count`, `X-Total-Pages`), bukan membungkus body — supaya body tetap array polos sesuai konvensi di atas.
 - Konvensi ini berlaku untuk SEMUA modul, bukan cuma Job Tracker.
 
 ## 6. Environment Variables
@@ -311,6 +312,19 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
 Di `docker-compose.yml`, service `postgres` perlu init script (mis. `docker-entrypoint-initdb.d/init-databases.sql`) yang membuat ketiga database saat container pertama kali dibuat, karena image resmi Postgres cuma otomatis bikin 1 database dari `POSTGRES_DB`.
 
 ## 7. Data Seed Awal
+
+**⚠️ Seed HANYA untuk environment development.** `seed.ts` WAJIB diawali guard berikut sebelum melakukan apa pun:
+
+```ts
+if (process.env.NODE_ENV === "production") {
+  console.error(
+    "❌ Seed script tidak boleh dijalankan di production. Dibatalkan.",
+  );
+  process.exit(1);
+}
+```
+
+`npx prisma db seed` sendiri tidak menghapus data yang sudah ada (beda dengan `prisma migrate reset` yang memang mereset seluruh database) — tapi guard di atas tetap wajib ada sebagai lapisan pengaman kalau perintah ini pernah tidak sengaja dijalankan mengarah ke `DATABASE_URL_JOB_TRACKER` production.
 
 `api/src/modules/job-tracker/prisma/seed.ts` memasukkan 9 perusahaan berikut (slug di-generate dari nama, field lain boleh placeholder kosong dulu — diisi manual belakangan lewat UI):
 
@@ -403,6 +417,67 @@ Port forwarding saja tidak memberi keamanan — itu cuma soal routing jaringan, 
 - Isolasi database: konek langsung ke database `job_tracker` lewat `psql`, pastikan cuma tabel modul ini yang ada di sana (tidak tercampur modul lain begitu modul lain dibangun).
 - Akses via Tailscale: dari device yang sudah terhubung ke Tailscale, aplikasi bisa dibuka; dari luar jaringan Tailscale, aplikasi tidak bisa dijangkau sama sekali.
 - Desain: cek tidak ada elemen blur/gradient/glassmorphism, tidak ada toggle tema, warna non-status konsisten netral.
+- `npm run lint` dan `npm run format:check` lulus tanpa error di `api/` dan `web/`.
+- Paginasi: `GET /applications?limit=1` dan `GET /companies?limit=1` mengembalikan 1 item tapi header `X-Total-Count` menunjukkan jumlah total yang benar; `?limit=101` ditolak `400`.
+- Seed guard: coba jalankan `NODE_ENV=production npx prisma db seed`, pastikan script menolak jalan dan keluar dengan pesan error, bukan diam-diam mengeksekusi.
+- `deploy.sh`: uji di VPS staging/percobaan — matikan sengaja salah satu migrasi (bikin gagal), pastikan script berhenti sebelum `docker compose up -d` (container lama tetap jalan, bukan ter-swap ke kode baru dengan skema lama).
+
+## 12. Code Quality: Linting & Formatting
+
+Berlaku untuk seluruh workspace (`api/` dan `web/`), satu konfigurasi dipakai bersama lewat file di root repo.
+
+- **ESLint** (`@typescript-eslint/recommended`) untuk aturan kode TypeScript, **Prettier** untuk formatting. Pasang `eslint-config-prettier` supaya kedua tool tidak saling bentrok soal aturan format.
+- Konfigurasi Prettier (`.prettierrc` di root):
+  ```json
+  {
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "all",
+    "printWidth": 100,
+    "tabWidth": 2
+  }
+  ```
+- Jalankan lint & format check sebagai bagian dari verification plan (Section 11): `npm run lint` dan `npm run format:check` harus lulus tanpa error sebelum dianggap selesai.
+- **Fase lanjut** (jangan dikerjakan otomatis tanpa diminta): `husky` + `lint-staged` untuk auto-format saat commit.
+
+## 13. Deployment Flow (Update Aplikasi Setelah Live)
+
+- Alur update: SSH ke VPS (lewat Tailscale) → `git pull` → build image baru → jalankan migrasi Prisma per modul **sebelum** container aktif diganti → swap ke container baru. Dibuat sebagai script `deploy.sh` di root repo supaya konsisten, bukan diketik manual tiap kali:
+
+  ```bash
+  #!/usr/bin/env bash
+  set -e
+
+  # Tambah nama modul baru di sini begitu modul itu punya schema.prisma sendiri
+  MODULES=("job-tracker")
+
+  git pull origin main
+
+  echo "🔨 Build image baru (belum mengganti container yang sedang jalan)..."
+  docker compose build api web
+
+  echo "🗄  Menjalankan migrasi Prisma per modul, pakai image baru lewat container sekali-pakai..."
+  for module in "${MODULES[@]}"; do
+    docker compose run --rm api npx prisma migrate deploy \
+      --schema=./src/modules/${module}/prisma/schema.prisma
+  done
+
+  echo "🚀 Migrasi selesai, swap ke container baru..."
+  docker compose up -d
+
+  docker compose ps
+  ```
+
+  **Kenapa urutannya begini (build → migrate → swap), bukan build+swap dulu baru migrate:** kalau container `api` langsung diganti sebelum migrasi jalan, ada jeda di mana kode baru sudah aktif tapi skema database masih lama — request yang masuk di jeda itu bisa error. Dengan `docker compose run --rm` (container sekali-pakai, bukan `exec` ke container yang sedang melayani traffic), migrasi jalan pakai image baru tanpa mengganggu `api` yang lama, dan `api` yang lama baru diganti (`up -d`) setelah migrasi dipastikan sukses. Kalau migrasi gagal, `set -e` menghentikan script sebelum sempat swap — `api` lama tetap jalan, bukan berakhir di kondisi kode baru + skema lama.
+
+- **Fase lanjut** (jangan dikerjakan otomatis tanpa diminta): GitHub Actions untuk build & test otomatis di setiap push. Auto-deploy (lewat Watchtower atau GitHub Actions yang SSH ke VPS) sengaja TIDAK direkomendasikan dulu — untuk project personal, deploy manual yang kamu trigger sendiri memberi kesempatan review sebelum versi baru live, dibanding auto-update yang langsung jalan begitu ada push baru.
+
+## 14. Logging
+
+- Pakai **pino** untuk logging terstruktur di backend (`api/`) — lebih ringan dibanding winston, cukup untuk kebutuhan personal project ini.
+- Level log: `error` untuk exception yang tertangkap di error-handling middleware, `warn` untuk kondisi tidak normal tapi tidak fatal (mis. request ditolak validasi), `info` untuk event penting (server start, migrasi selesai). Hindari `console.log` polos untuk hal-hal ini.
+- Docker sendiri sudah otomatis menangkap stdout/stderr lewat `docker compose logs -f api` — pino dipakai supaya log yang ditangkap itu terstruktur (level, timestamp, JSON) dan gampang di-filter, bukan cuma teks bebas.
+- Format log: pretty-print (`pino-pretty`) saat development, JSON polos saat production (lebih gampang di-parse kalau nanti dikirim ke tool log management, meski itu di luar scope MVP).
 
 ---
 
