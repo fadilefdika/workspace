@@ -1,0 +1,102 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_JOB_TRACKER")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Company {
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  industry      String?
+  location      String?
+  websiteUrl    String?       @map("website_url")
+  careerPageUrl String?       @map("career_page_url")
+  priority      Priority      @default(MEDIUM)
+  researchNotes String?       @map("research_notes")
+  dealBreakers  String[]      @map("deal_breakers")
+  applications  Application[]
+  deletedAt     DateTime?     @map("deleted_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@map("companies")
+}
+
+model Application {
+  id                     String            @id @default(cuid())
+  companyId              String            @map("company_id")
+  company                Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  position               String
+  appliedDate            DateTime          @map("applied_date")
+  source                 ApplicationSource
+  applicationLink        String?           @map("application_link")
+  status                 ApplicationStatus @default(APPLIED)
+  statusUpdatedAt        DateTime          @default(now()) @map("status_updated_at")
+  contactPerson          String?           @map("contact_person")
+  contactInfo            String?           @map("contact_info")
+  nextFollowUp           DateTime?         @map("next_follow_up")
+  followUpCount          Int               @default(0) @map("follow_up_count")
+  notes                  String?
+  salaryRange            String?           @map("salary_range")
+  attachmentUrl          String?           @map("attachment_url")
+  archivedJobDescription String?           @map("archived_job_description")
+  fitScore               Int?              @map("fit_score")
+  fitNotes               String?           @map("fit_notes")
+  interviewStages        InterviewStage[]
+  deletedAt              DateTime?         @map("deleted_at")
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime          @updatedAt @map("updated_at")
+
+  @@map("applications")
+}
+
+model InterviewStage {
+  id            String       @id @default(cuid())
+  applicationId String       @map("application_id")
+  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  stageName     String       @map("stage_name")
+  scheduledAt   DateTime?    @map("scheduled_at")
+  feedback      String?
+  outcome       StageOutcome @default(PENDING)
+  deletedAt     DateTime?    @map("deleted_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  @@map("interview_stages")
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum ApplicationSource {
+  LINKEDIN
+  JOBSTREET
+  GLINTS
+  COMPANY_WEBSITE
+  REFERRAL
+  CAREER_FAIR
+  OTHER
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SCREENING
+  INTERVIEW_HR
+  INTERVIEW_USER
+  OFFER
+  ACCEPTED
+  REJECTED
+  GHOSTED
+}
+
+enum StageOutcome {
+  PENDING
+  PASSED
+  FAILED
+}
