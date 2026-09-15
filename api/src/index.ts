@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import companiesRoutes from './modules/job-tracker/routes/companies.routes';
 import applicationsRoutes from './modules/job-tracker/routes/applications.routes';
 import dashboardRoutes from './modules/job-tracker/routes/dashboard.routes';
+import contentRoutes from './modules/content-planner/routes/content.routes';
 import { errorHandler } from './shared/middlewares/errorHandler';
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/v1/companies', companiesRoutes);
 app.use('/api/v1/applications', applicationsRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/content', contentRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

@@ -9,7 +9,7 @@ Repo ini **bukan** aplikasi job tracker berdiri sendiri. Ini adalah **satu works
 | Modul               | Status                                                 | Halaman utama                 |
 | ------------------- | ------------------------------------------------------ | ----------------------------- |
 | **Job Tracker**     | Dikerjakan sekarang (Section 1-11 di bawah)            | `/applications`, `/companies` |
-| **Content Planner** | Belum dispek — menyusul                                | `/content` (rencana)          |
+| **Content Planner** | Selesai (MVP)                                          | `/content`                    |
 | **Reading Digest**  | Belum dispek — artikel + glossary dari diskusi Threads | `/digest` (rencana)           |
 
 **Prinsip arsitektur workspace ini:**
@@ -17,7 +17,7 @@ Repo ini **bukan** aplikasi job tracker berdiri sendiri. Ini adalah **satu works
 - **Satu backend Express, satu frontend Next.js, satu `docker-compose.yml`.** Modul baru tidak bikin repo/service baru — cukup folder modul baru di dalam struktur yang sama.
 - **Kode dipisah per modul (vertical slice), bukan per layer.** Setiap modul punya folder sendiri berisi route, controller, service, dan schema Prisma miliknya sendiri — bukan semua controller dicampur di satu folder `controllers/` lintas modul. Lihat Section 3.
 - **Data terisolasi penuh per modul.** Satu container PostgreSQL, tapi **3 database logis terpisah** (bukan 1 database dibagi-bagi tabel) — job tracker, content planner, dan reading digest tidak saling bisa `JOIN` satu sama lain di level SQL. Kalau nanti butuh ringkasan lintas modul, itu digabung di kode backend (beberapa query, digabung di JS), bukan lewat query SQL gabungan. Lihat Section 4 & 6.
-- **Frontend punya satu `Navbar` global** yang menghubungkan ke semua modul yang sudah ada.
+- **Frontend punya satu `Sidebar` global** yang menghubungkan ke semua modul yang sudah ada, dibagi per kategori (mis. Find Job & Content).
 - **Satu bahasa desain** untuk seluruh workspace — lihat Section 1.
 
 Section 1-11 di bawah ini fokus ke spesifikasi **Job Tracker** sebagai modul pertama yang dikerjakan. Saat Content Planner atau Reading Digest mulai digarap, dokumen ini ditambah section serupa untuk modul tersebut — bukan dokumen terpisah.
@@ -100,7 +100,7 @@ personal-workspace/
 │   │   │   ├── content/                      # ── Modul: Content Planner (menyusul) ──
 │   │   │   └── digest/                       # ── Modul: Reading Digest (menyusul) ──
 │   │   ├── components/
-│   │   │   ├── layout/Navbar.tsx             # Navigasi global ke semua modul
+│   │   │   ├── layout/Sidebar.tsx            # Navigasi sidebar global ke semua modul
 │   │   │   ├── dashboard/                    # StatCards, FunnelChart, FollowUpReminders
 │   │   │   ├── applications/                 # FitScoreBadge, InterviewStageList, FollowUpDraftModal
 │   │   │   └── companies/                    # DealBreakerTags
@@ -353,7 +353,7 @@ if (process.env.NODE_ENV === "production") {
 - `DealBreakerTags`: render `dealBreakers` company sebagai tag/chip di halaman detail perusahaan — murni informatif, TIDAK memblokir apa pun di UI.
 - `FollowUpDraftModal`: tombol "Generate Follow-up" di detail aplikasi memanggil `POST /applications/:id/follow-up-draft`, tampilkan teks di textarea yang bisa di-copy manual, tombol disabled kalau `followUpCount >= 2`.
 - `InterviewStageList`: di halaman `/applications/[id]`, render timeline tahap interview (nama, jadwal, outcome, feedback) dengan tombol tambah tahap baru.
-- `Navbar.tsx`: link ke semua modul yang sudah aktif. Saat Content Planner/Reading Digest belum ada, cukup tampilkan link Job Tracker (`Applications`, `Companies`).
+- `Sidebar.tsx`: navigasi utama di sisi kiri layar, dikelompokkan per kategori modul (mis. "Find Job", "Content").
 - Aksi hapus di UI (tombol "Hapus") tetap terasa seperti hapus biasa bagi user — tidak perlu ada UI khusus "pulihkan data" di MVP, soft delete di backend murni untuk keamanan data, bukan fitur user-facing dulu.
 
 ## 9. Docker & Deployment
@@ -382,7 +382,7 @@ Port forwarding saja tidak memberi keamanan — itu cuma soal routing jaringan, 
 6. **Interview stages & prep page** — timeline tahap interview di detail aplikasi, halaman `/applications/[id]/prep` (checklist statis dulu: riset perusahaan, siapkan STAR examples, review JD — versi AI-generated masuk fase lanjut).
 7. **Follow-up draft** — endpoint + modal, template statis dulu (placeholder `{position}`, `{company}`, `{appliedDate}`), AI-generated draft menyusul di fase lanjut.
 8. **Deployment ke VPS** — Dockerfile tiap service, setup Tailscale di VPS, uji akses dari device pribadi, uji end-to-end.
-9. **(Setelah Job Tracker stabil)** — spek dan bangun modul Content Planner: folder `modules/content-planner/` baru dengan struktur sama, database baru (`content_planner`), halaman baru di `web/`.
+9. **(Selesai)** — spek dan bangun modul Content Planner: folder `modules/content-planner/` baru dengan struktur sama, database baru (`content_planner`), halaman baru di `web/`.
 10. **(Setelah itu)** — spek dan bangun modul Reading Digest, termasuk endpoint yang menerima teks utas Threads (dari ekstensi capture / paste manual) dan memanggil LLM untuk menghasilkan artikel + glossary.
 
 **Fase lanjut (di luar MVP, dicatat supaya tidak lupa — jangan dikerjakan otomatis tanpa diminta):**
@@ -482,3 +482,262 @@ Berlaku untuk seluruh workspace (`api/` dan `web/`), satu konfigurasi dipakai be
 ---
 
 _Dokumen ini adalah acuan utama untuk AI coding agent, mencakup seluruh workspace (bukan cuma Job Tracker). Jika ada perubahan keputusan arsitektur di tengah development — termasuk saat modul baru mulai digarap — update dokumen ini juga supaya tetap jadi source of truth._
+
+# AGENTS.md — Tambahan (Section 15-22)
+
+> Dokumen ini adalah **addendum** untuk `AGENTS.md` utama. Tempelkan section di bawah ini setelah Section 14 (Logging), atau sisipkan masing-masing ke section terkait (ditandai di judul tiap bagian). Semua keputusan di sini bersifat rekomendasi — validasi dulu sebelum jadi source of truth permanen.
+
+---
+
+## 15. Revisi Keputusan: Isolasi Data Antar Modul (update Section 4 & 6)
+
+**Keputusan awal:** 3 database Postgres terpisah penuh per modul.
+
+**Revisi yang direkomendasikan:** tetap isolasi logis penuh (tidak ada JOIN lintas modul), tapi lewat **Postgres schema**, bukan database terpisah — dalam satu database, satu `DATABASE_URL`.
+
+**Kenapa direvisi:** untuk aplikasi single-user personal, manfaat isolasi-per-database (keamanan multi-tenant, scaling independen, mencegah tim lain nyenggol tabel) tidak relevan. Biayanya nyata: 3x koneksi, 3x migration folder, dan dashboard lintas modul (Section 0, roadmap #9) terpaksa digabung manual di JS karena benar-benar tidak bisa query gabungan sama sekali — bukan cuma tidak disarankan.
+
+**Kalau tetap ingin database terpisah penuh** (misal karena sengaja latihan pola ini untuk konteks kerja yang menuntut microservices-thinking), itu keputusan valid — cukup tulis eksplisit di Section 4 kenapa, supaya jelas ini pilihan sadar, bukan default yang tidak dipertimbangkan ulang.
+
+**Kalau pindah ke schema-based:**
+
+```prisma
+// api/src/modules/job-tracker/prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["job_tracker"]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+model Company {
+  // ...
+  @@schema("job_tracker")
+}
+```
+
+```
+# .env — satu DATABASE_URL untuk semua modul
+DATABASE_URL=postgresql://workspace:changeme@postgres:5432/workspace
+```
+
+Init script Postgres berubah dari "buat 3 database" jadi "buat 3 schema di 1 database" (`CREATE SCHEMA job_tracker; CREATE SCHEMA content_planner; CREATE SCHEMA reading_digest;`). Tetap 1 Prisma Client per modul kalau mau strict (masing-masing di-scope ke schema-nya lewat `schemas` array), tapi sekarang dashboard lintas modul (roadmap #9) *bisa* pakai raw SQL gabungan (`SELECT ... FROM job_tracker.applications JOIN reading_digest.articles ...`) kalau nanti benar-benar dibutuhkan (lihat Section 20), tanpa harus stitching di JS.
+
+---
+
+## 16. Model Data Tambahan (update Section 4)
+
+### a. `Attachment` — pisah dari `attachmentUrl` tunggal
+
+Satu lamaran biasanya butuh CV + cover letter + kadang portfolio berbeda. Field tunggal memaksa workaround. Ganti `attachmentUrl` di `Application` dengan relasi:
+
+```prisma
+model Attachment {
+  id            String         @id @default(cuid())
+  applicationId String         @map("application_id")
+  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type          AttachmentType
+  url           String
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  @@map("attachments")
+}
+
+enum AttachmentType {
+  CV
+  COVER_LETTER
+  PORTFOLIO
+  OTHER
+}
+```
+
+### b. Offer final pada `Application`
+
+`salaryRange` mencatat ekspektasi awal, bukan angka yang benar-benar ditawarkan. Tambahkan:
+
+```prisma
+model Application {
+  // ...existing fields...
+  offeredSalary  String?   @map("offered_salary")
+  offeredAt      DateTime? @map("offered_at")
+}
+```
+
+Berguna untuk membandingkan offer lintas perusahaan saat negosiasi — data historis, bukan cuma catatan sesaat.
+
+---
+
+## 17. Testing Strategy (update Section 11 & 12)
+
+Verification plan sekarang murni manual + build/lint. Tambahkan unit test untuk logika service-layer yang paling gampang salah diam-diam:
+
+| Target | Kenapa perlu di-test |
+|---|---|
+| `generateSlug()` + collision handling | Salah di sini = data company tumpang tindih tanpa error yang jelas |
+| `followUpCount >= 2` → tolak draft baru | Kalau lolos, follow-up draft bisa dibuat tak terbatas tanpa terdeteksi lewat UI |
+| Perubahan `status` → `statusUpdatedAt` ter-update | Kalau lupa, funnel chart & reminder jadi salah hitung diam-diam |
+
+Setup: **Vitest** (ringan, cocok dengan stack TS yang sudah ada), test file co-located dengan service (`applications.service.test.ts`). Tambahkan `npm run test` ke verification plan Section 11, jalankan sebelum `lint`/`format:check`.
+
+---
+
+## 18. Job Tracker — Skill Gap Tracking (extend Section 4, 5, 8)
+
+Fitur "skill gap analysis" di roadmap saat ini ditandai fase lanjut dengan asumsi butuh AI. Versi manual (tanpa AI) sudah bisa dibangun di MVP dan memberi nilai nyata:
+
+### Data model
+
+```prisma
+model Application {
+  // ...existing fields...
+  requiredSkills String[] @map("required_skills")  // tag manual dari JD saat create, mis. ["React", "PostgreSQL", "Bahasa Mandarin"]
+}
+```
+
+Diisi manual saat create application (textarea comma-separated → array, sama pola dengan `dealBreakers` di Company).
+
+### Endpoint baru
+
+| Method | Endpoint | Response |
+|---|---|---|
+| GET | `/insights/skill-gaps` | `200` array `{ skill, appliedCount, rejectedCount, rejectionRate }` — agregasi `requiredSkills` dari applications dengan status `REJECTED`/`GHOSTED`, diurutkan `rejectionRate` menurun |
+
+Logika: `service` layer hitung frekuensi tiap skill yang muncul di `requiredSkills` pada applications yang gagal, dibanding total applications yang menyebut skill itu. Query biasa, tidak butuh AI — endpoint AI-assist (fase lanjut, kirim JD ke Claude API untuk ekstraksi skill otomatis) tinggal ditambahkan belakangan tanpa mengubah struktur data ini.
+
+### Frontend
+
+Halaman baru `/insights` (Section 3, tambahkan ke `web/src/app/`): tabel skill × rejection rate, sort default rejection rate tertinggi. Ini yang menjawab "di skill apa saya paling sering gagal" — value langsung tanpa nunggu AI-assist.
+
+---
+
+## 19. Job Tracker — STAR Bank (extend Section 4, 5, 8, roadmap #6)
+
+Halaman `/applications/[id]/prep` saat ini checklist statis per-aplikasi, tidak reusable. Ubah jadi bank cerita yang terus diperkaya lintas aplikasi:
+
+### Data model
+
+```prisma
+model StarStory {
+  id          String   @id @default(cuid())
+  title       String                              // "Migrasi database tanpa downtime"
+  competency  String                               // tag: "Leadership", "Conflict Resolution", "Problem Solving", dst — free text, bukan enum, biar fleksibel
+  situation   String
+  task        String
+  action      String
+  result      String
+  usedInApplicationIds String[] @map("used_in_application_ids")  // cukup array id, tanpa relasi formal — dicatat kapan dipakai
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("star_stories")
+}
+```
+
+### Endpoint baru
+
+Resource independen (tidak nested di bawah `/applications`, karena satu cerita dipakai lintas banyak lamaran): `GET/POST /star-stories`, `PATCH/DELETE /star-stories/:id`.
+
+### Frontend
+
+- Halaman baru `/star-stories` — daftar cerita, filter per `competency`.
+- Di `/applications/[id]/prep`, tambahkan panel "Cerita relevan" yang menampilkan `StarStory` yang competency-nya cocok dengan `requiredSkills` aplikasi ini (matching sederhana string, bukan AI) — dari sinilah checklist statis jadi terasa personal tanpa AI-assist.
+
+---
+
+## 20. Modul Reading Digest — Spek Awal (isi Section 0 & roadmap #10)
+
+Spesifikasi awal supaya modul ini terhubung ke skill gap (Section 18), bukan cuma penyimpanan artikel lepas.
+
+### Prinsip
+
+- Struktur folder & isolasi data sama persis dengan Job Tracker (Section 3), di `modules/reading-digest/`.
+- Tiap entri digest **wajib** ditag skill/topik (`tags String[]`) — memakai kosakata skill yang sama dengan `requiredSkills` di Job Tracker (tidak ada foreign key lintas database/schema, tapi konvensi penamaan tag disamakan manual).
+
+### Data model (awal)
+
+```prisma
+model DigestEntry {
+  id            String   @id @default(cuid())
+  sourceType    SourceType @map("source_type")   // THREADS_THREAD, ARTICLE_URL, MANUAL_PASTE
+  sourceUrl     String?  @map("source_url")
+  rawContent    String   @map("raw_content")       // teks asli yang di-paste/capture
+  generatedArticle String? @map("generated_article") // hasil LLM, null sebelum diproses
+  glossary      Json?                                // [{ term, definition }] hasil LLM
+  tags          String[]                             // skill/topik, konvensi sama dengan requiredSkills job-tracker
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("digest_entries")
+}
+
+enum SourceType {
+  THREADS_THREAD
+  ARTICLE_URL
+  MANUAL_PASTE
+}
+```
+
+### Koneksi ke skill gap
+
+Endpoint `GET /insights/skill-gaps` (Section 18) tinggal di-extend di layer dashboard-gabungan (Section 0 — digabung di kode backend, bukan SQL join, kecuali sudah pindah ke schema-based/Section 15): untuk tiap skill dengan rejection rate tinggi, tampilkan jumlah `DigestEntry` yang sudah ditag skill itu. Ini yang membuat 3 modul benar-benar "berkesinambungan" seperti yang diminta — bukan cuma hidup di docker-compose yang sama, tapi saling mengisi: job tracker menunjukkan gap, reading digest menunjukkan progres belajar untuk menutup gap itu.
+
+**Non-negotiable tambahan:** endpoint AI (ekstraksi artikel+glossary dari `rawContent`) dipanggil manual per-entry (tombol "Generate" di UI), bukan otomatis saat create — supaya kamu bisa review teks mentah dulu sebelum kena biaya API call, konsisten dengan pola `fitScore`/AI-assist di Job Tracker (opsional saat create).
+
+---
+
+## 21. Modul Content Planner — Spek Awal Minimal (isi Section 0 & roadmap #9)
+
+Spek minimal supaya modul ini tidak jadi "belum dispek selamanya". Fokus MVP: personal branding terkait karier (LinkedIn/portfolio), bukan content planner umum.
+
+### Data model (awal)
+
+```prisma
+model ContentIdea {
+  id          String    @id @default(cuid())
+  title       String
+  theme       String?                                // narasi karier: "career transition", "technical deep-dive", dst
+  platform    Platform  @default(LINKEDIN)
+  status      ContentStatus @default(IDEA)
+  draftText   String?   @map("draft_text")
+  publishedUrl String?  @map("published_url")
+  publishedAt DateTime? @map("published_at")
+  linkedSkills String[] @map("linked_skills")         // sama konvensi tag dengan modul lain
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("content_ideas")
+}
+
+enum Platform {
+  LINKEDIN
+  BLOG
+  OTHER
+}
+
+enum ContentStatus {
+  IDEA
+  DRAFTING
+  SCHEDULED
+  PUBLISHED
+}
+```
+
+MVP: CRUD sederhana + kanban by `status` (pola sama dengan applications). Endpoint AI-assist (draft dari `linkedSkills`/`StarStory` terkait) eksplisit ditunda — dicatat di roadmap fase lanjut modul ini, bukan dikerjakan sekaligus dengan CRUD dasar.
+
+---
+
+## 22. Revisi Roadmap & Prioritas Eksekusi (update Section 10)
+
+Urutan yang direkomendasikan, mengoreksi risiko scope untuk solo builder:
+
+1-8. **Sama seperti roadmap asli** (setup → backend → frontend → dashboard → kanban → interview stages → follow-up draft → deploy), **ditambah** Section 16-19 di atas (Attachment, offer fields, skill gap endpoint, STAR bank) sebagai bagian dari MVP Job Tracker — karena semuanya beroperasi di data yang sama, bukan modul baru, jadi tidak menambah kompleksitas arsitektur.
+9. **Pakai Job Tracker (+ skill gap + STAR bank) minimal 2-3 minggu nyata** sebelum mulai modul baru — ini bukan langkah teknis, tapi checkpoint wajib. Modul kedua/ketiga hanya bernilai kalau kebiasaan pertama sudah kepakai.
+10. Reading Digest (Section 20) — didahulukan dari Content Planner karena terhubung langsung ke skill gap yang sudah punya data nyata dari langkah 9.
+11. Content Planner (Section 21).
+
+**Alasan menukar urutan modul 3 & 4 dari roadmap asli:** Reading Digest punya jalur nilai yang jelas dan terukur (menutup skill gap yang sudah teridentifikasi), sedangkan Content Planner nilainya lebih ke branding jangka panjang — lebih aman dibangun setelah ada bahan nyata (dari Reading Digest + STAR bank) untuk dikonten-kan.

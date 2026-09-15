@@ -94,3 +94,20 @@ export interface DashboardMonthly {
  count: number;
 }
 
+
+// Content Planner Types
+export type ContentStatus = 'IDEA' | 'DRAFTING' | 'REVIEW' | 'SCHEDULED' | 'PUBLISHED';
+export type Platform = 'LINKEDIN' | 'THREADS';
+
+export interface ContentItem {
+  id: string;
+  title: string;
+  description?: string | null;
+  contentBody?: string | null;
+  status: ContentStatus;
+  platform: Platform;
+  targetDate?: string | null;
+  publishUrl?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
