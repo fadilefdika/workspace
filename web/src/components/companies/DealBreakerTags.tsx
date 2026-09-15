@@ -16,7 +16,7 @@ export default function DealBreakerTags({ dealBreakers }: DealBreakerTagsProps) 
  {dealBreakers.map((tag, idx) => (
  <span
  key={idx}
- className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20"
+ className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-600 border border-rose-500/20"
  >
  <AlertTriangle className="w-3 h-3 text-rose-500" />
  <span>{tag}</span>

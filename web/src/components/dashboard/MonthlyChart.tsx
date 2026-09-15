@@ -10,7 +10,7 @@ interface MonthlyChartProps {
 export default function MonthlyChart({ monthly }: MonthlyChartProps) {
  return (
  <div className="glass-card p-6 rounded-2xl">
- <h3 className="text-lg font-bold mb-1 text-slate-900">
+ <h3 className="text-lg font-medium mb-1 text-slate-900">
  Aktivitas Melamar per Bulan
  </h3>
  <p className="text-xs text-slate-500 mb-6">

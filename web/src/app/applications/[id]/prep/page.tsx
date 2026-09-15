@@ -70,7 +70,7 @@ export default function ApplicationPrepPage() {
  <ArrowLeft className="w-5 h-5" />
  </Link>
  <div>
- <h1 className="text-2xl font-bold text-slate-900">Persiapan Interview (Prep Checklist)</h1>
+ <h1 className="text-2xl font-medium text-slate-900">Persiapan Interview (Prep Checklist)</h1>
  <p className="text-xs text-slate-500">
  {application.position} di {application.company?.name}
  </p>
@@ -82,7 +82,7 @@ export default function ApplicationPrepPage() {
  <div className="flex items-center justify-between mb-3">
  <div className="flex items-center space-x-2">
  <BookOpen className="w-5 h-5 text-indigo-500" />
- <h3 className="font-bold text-base text-slate-900">Progres Kesiapan Interview</h3>
+ <h3 className="font-medium text-base text-slate-900">Progres Kesiapan Interview</h3>
  </div>
  <span className="text-sm font-extrabold text-indigo-600">
  {completedCount} / {checklist.length} ({progressPercent}%)
@@ -103,7 +103,7 @@ export default function ApplicationPrepPage() {
  const items = checklist.filter((c) => c.category === cat);
  return (
  <div key={cat} className="glass-card p-5 rounded-2xl space-y-3">
- <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-500 flex items-center space-x-2">
+ <h4 className="font-medium text-xs uppercase tracking-wider text-indigo-500 flex items-center space-x-2">
  <CheckCircle2 className="w-4 h-4" />
  <span>{cat}</span>
  </h4>
@@ -135,7 +135,7 @@ export default function ApplicationPrepPage() {
  {/* Sidebar Snapshot JD */}
  <div className="space-y-4">
  <div className="glass-card p-5 rounded-2xl space-y-3">
- <h3 className="font-bold text-sm text-slate-900 flex items-center space-x-2">
+ <h3 className="font-medium text-sm text-slate-900 flex items-center space-x-2">
  <FileText className="w-4 h-4 text-purple-500" />
  <span>Job Description Snapshot</span>
  </h3>

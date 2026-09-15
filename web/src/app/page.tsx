@@ -55,7 +55,7 @@ export default function DashboardPage() {
  {/* Header Banner */}
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
  <div>
- <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+ <h1 className="text-2xl sm:text-3xl font-medium text-slate-900">
  Dashboard Karir & Lamaran
  </h1>
  <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -66,13 +66,13 @@ export default function DashboardPage() {
  <div className="flex items-center space-x-3">
  <Link
  href="/companies/new"
- className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs transition-all shadow-sm"
+ className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-medium text-xs transition-all shadow-sm"
  >
  <span>Target Perusahaan</span>
  </Link>
  <Link
  href="/applications/new"
- className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-sm"
+ className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-all shadow-sm"
  >
  <span>Tambah Lamaran</span>
  </Link>

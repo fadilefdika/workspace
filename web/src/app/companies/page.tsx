@@ -60,7 +60,7 @@ export default function CompaniesPage() {
  {/* Header & Actions */}
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
  <div>
- <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+ <h1 className="text-2xl sm:text-3xl font-medium text-slate-900">
  Direktori Perusahaan Incaran
  </h1>
  <p className="text-xs sm:text-sm text-slate-500">
@@ -70,7 +70,7 @@ export default function CompaniesPage() {
 
  <Link
  href="/companies/new"
- className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-lg shadow-indigo-500/25"
+ className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-all shadow-lg shadow-indigo-500/25"
  >
  <Plus className="w-4 h-4" />
  <span>Tambah Perusahaan</span>
@@ -120,11 +120,11 @@ export default function CompaniesPage() {
  <span className={`inline-block px-2.5 py-0.5 rounded-full border text-[10px] font-extrabold uppercase tracking-wider mb-2 ${getPriorityBadge(company.priority)}`}>
  {company.priority} Priority
  </span>
- <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-500 transition-colors">
+ <h3 className="text-lg font-medium text-slate-900 group-hover:text-indigo-500 transition-colors">
  {company.name}
  </h3>
  </div>
- <span className="inline-flex items-center space-x-1 text-xs font-bold text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-xl">
+ <span className="inline-flex items-center space-x-1 text-xs font-medium text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-xl">
  <Briefcase className="w-3.5 h-3.5" />
  <span>{company.applicationCount ?? 0}</span>
  </span>
@@ -155,14 +155,14 @@ export default function CompaniesPage() {
  <div className="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between">
  <Link
  href={`/companies/${company.slug}`}
- className="inline-flex items-center space-x-1 text-xs font-bold text-indigo-600 hover:underline"
+ className="inline-flex items-center space-x-1 text-xs font-medium text-indigo-600 hover:underline"
  >
  <span>Detail & Riset</span>
  <ChevronRight className="w-4 h-4" />
  </Link>
  <Link
  href={`/applications/new?companyId=${company.id}`}
- className="text-xs text-slate-400 hover:text-slate-200 font-semibold"
+ className="text-xs text-slate-400 hover:text-slate-200 font-medium"
  >
  + Apply
  </Link>

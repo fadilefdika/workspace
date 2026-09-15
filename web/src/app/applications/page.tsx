@@ -97,7 +97,7 @@ export default function ApplicationsPage() {
  {/* Top Header & Actions */}
  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
  <div>
- <h1 className="text-2xl sm:text-3xl font-black text-slate-900">Daftar Lamaran Kerja</h1>
+ <h1 className="text-2xl sm:text-3xl font-medium text-slate-900">Daftar Lamaran Kerja</h1>
  <p className="text-xs sm:text-sm text-slate-500">
  Kelola dan pantau progres lamaran yang telah diajukan
  </p>
@@ -108,7 +108,7 @@ export default function ApplicationsPage() {
  <div className="flex items-center p-1 rounded-xl glass-card border border-slate-200">
  <button
  onClick={() => setViewMode('table')}
- className={`p-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${
+ className={`p-2 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-all ${
  viewMode ==='table'
  ?'bg-indigo-600 text-white shadow-sm'
  :'text-slate-500 hover:text-slate-900 :text-white'
@@ -119,7 +119,7 @@ export default function ApplicationsPage() {
  </button>
  <button
  onClick={() => setViewMode('kanban')}
- className={`p-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${
+ className={`p-2 rounded-lg text-xs font-medium flex items-center space-x-1.5 transition-all ${
  viewMode ==='kanban'
  ?'bg-indigo-600 text-white shadow-sm'
  :'text-slate-500 hover:text-slate-900 :text-white'
@@ -132,7 +132,7 @@ export default function ApplicationsPage() {
 
  <Link
  href="/applications/new"
- className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-lg shadow-indigo-500/25"
+ className="inline-flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-all shadow-lg shadow-indigo-500/25"
  >
  <Plus className="w-4 h-4" />
  <span>Tambah Lamaran</span>
@@ -179,7 +179,7 @@ export default function ApplicationsPage() {
  <div className="overflow-x-auto">
  <table className="w-full text-left border-collapse text-xs">
  <thead>
- <tr className="border-b border-slate-200 bg-slate-100/50 text-slate-500 font-bold uppercase tracking-wider">
+ <tr className="border-b border-slate-200 bg-slate-100/50 text-slate-500 font-medium uppercase tracking-wider">
  <th className="py-3.5 px-4">Posisi & Perusahaan</th>
  <th className="py-3.5 px-4">Tanggal Apply</th>
  <th className="py-3.5 px-4">Sumber</th>
@@ -200,7 +200,7 @@ export default function ApplicationsPage() {
  <tr key={app.id} className="hover:bg-slate-100/50 :bg-slate-900/40 transition-colors">
  <td className="py-3.5 px-4">
  <div>
- <Link href={`/applications/${app.id}`} className="font-bold text-sm text-slate-900 hover:text-indigo-500 transition-colors">
+ <Link href={`/applications/${app.id}`} className="font-medium text-sm text-slate-900 hover:text-indigo-500 transition-colors">
  {app.position}
  </Link>
  <div className="flex items-center space-x-1.5 text-slate-500 mt-0.5">
@@ -216,7 +216,7 @@ export default function ApplicationsPage() {
  </div>
  </td>
  <td className="py-3.5 px-4">
- <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold text-[11px]">
+ <span className="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-medium text-[11px]">
  {app.source}
  </span>
  </td>
@@ -227,7 +227,7 @@ export default function ApplicationsPage() {
  <select
  value={app.status}
  onChange={(e) => handleStatusChange(app.id, e.target.value as ApplicationStatus)}
- className={`px-2.5 py-1 rounded-full border text-xs font-bold bg-transparent focus:outline-none ${getStatusBadge(app.status)}`}
+ className={`px-2.5 py-1 rounded-full border text-xs font-medium bg-transparent focus:outline-none ${getStatusBadge(app.status)}`}
  >
  <option value="APPLIED" className="bg-slate-900 text-white">APPLIED</option>
  <option value="SCREENING" className="bg-slate-900 text-white">SCREENING</option>
@@ -242,7 +242,7 @@ export default function ApplicationsPage() {
  <td className="py-3.5 px-4 text-right">
  <Link
  href={`/applications/${app.id}`}
- className="inline-flex items-center space-x-1 p-2 rounded-lg text-indigo-600 hover:bg-indigo-500/10 font-bold transition-colors"
+ className="inline-flex items-center space-x-1 p-2 rounded-lg text-indigo-600 hover:bg-indigo-500/10 font-medium transition-colors"
  >
  <span>Detail</span>
  <ChevronRight className="w-4 h-4" />
@@ -256,22 +256,22 @@ export default function ApplicationsPage() {
  </div>
  </div>
  ) : (
- /* Kanban Board View */
- <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto pb-4">
- {kanbanColumns.map((col) => {
- const colApps = filteredApps.filter((app) => {
- if (col.status ==='OFFER') return app.status ==='OFFER'|| app.status ==='ACCEPTED';
- if (col.status ==='REJECTED') return app.status ==='REJECTED'|| app.status ==='GHOSTED';
- return app.status === col.status;
- });
+  /* Kanban Board View */
+  <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+    {kanbanColumns.map((col) => {
+      const colApps = filteredApps.filter((app) => {
+        if (col.status === 'OFFER') return app.status === 'OFFER' || app.status === 'ACCEPTED';
+        if (col.status === 'REJECTED') return app.status === 'REJECTED' || app.status === 'GHOSTED';
+        return app.status === col.status;
+      });
 
- return (
- <div key={col.status} className="glass-card p-4 rounded-2xl border border-slate-200 flex flex-col min-w-[240px]">
- <div className="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
- <h3 className="font-bold text-xs uppercase tracking-wider text-slate-700">
+      return (
+        <div key={col.status} className="glass-card p-4 rounded-2xl border border-slate-200 flex flex-col w-[300px] shrink-0 snap-start">
+          <div className="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
+ <h3 className="font-medium text-xs uppercase tracking-wider text-slate-700">
  {col.title}
  </h3>
- <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-500">
+ <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-500">
  {colApps.length}
  </span>
  </div>
@@ -279,7 +279,7 @@ export default function ApplicationsPage() {
  <div className="space-y-3 flex-1 overflow-y-auto max-h-[70vh]">
  {colApps.map((app) => (
  <div key={app.id} className="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-500/50 transition-all shadow-sm space-y-2">
- <Link href={`/applications/${app.id}`} className="font-bold text-sm text-slate-900 hover:text-indigo-500 block">
+ <Link href={`/applications/${app.id}`} className="font-medium text-sm text-slate-900 hover:text-indigo-500 block">
  {app.position}
  </Link>
  <p className="text-xs text-slate-500 flex items-center space-x-1">
@@ -288,7 +288,7 @@ export default function ApplicationsPage() {
  </p>
  <div className="flex items-center justify-between pt-1">
  <FitScoreBadge score={app.fitScore} />
- <Link href={`/applications/${app.id}`} className="text-indigo-500 hover:underline text-xs font-bold">
+ <Link href={`/applications/${app.id}`} className="text-indigo-500 hover:underline text-xs font-medium">
  Detail →
  </Link>
  </div>

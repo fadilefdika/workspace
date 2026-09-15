@@ -86,7 +86,7 @@ function NewApplicationForm() {
  return (
  <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-6">
  {errorMsg && (
- <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-semibold">
+ <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-medium">
  {errorMsg}
  </div>
  )}
@@ -94,7 +94,7 @@ function NewApplicationForm() {
  {/* Company & Position */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Perusahaan Target *
  </label>
  <select
@@ -113,7 +113,7 @@ function NewApplicationForm() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Posisi yang Dilamar *
  </label>
  <input
@@ -130,7 +130,7 @@ function NewApplicationForm() {
  {/* Date, Source, Status */}
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Tanggal Apply *
  </label>
  <input
@@ -143,7 +143,7 @@ function NewApplicationForm() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Sumber Lowongan *
  </label>
  <select
@@ -162,7 +162,7 @@ function NewApplicationForm() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Status Awal
  </label>
  <select
@@ -182,7 +182,7 @@ function NewApplicationForm() {
  {/* Links & Salary */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Link Lowongan
  </label>
  <input
@@ -195,7 +195,7 @@ function NewApplicationForm() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Range Gaji (Opsional)
  </label>
  <input
@@ -211,7 +211,7 @@ function NewApplicationForm() {
  {/* HR Contact & Next Follow Up */}
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Nama Kontak HR
  </label>
  <input
@@ -224,7 +224,7 @@ function NewApplicationForm() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Kontak HR (Email/WA)
  </label>
  <input
@@ -237,7 +237,7 @@ function NewApplicationForm() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Jadwal Follow-up
  </label>
  <input
@@ -252,7 +252,7 @@ function NewApplicationForm() {
  {/* Fit Score & Notes */}
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Fit Score (0-100)
  </label>
  <input
@@ -267,7 +267,7 @@ function NewApplicationForm() {
  </div>
 
  <div className="sm:col-span-2">
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Alasan Fit Score (Fit Notes)
  </label>
  <input
@@ -282,7 +282,7 @@ function NewApplicationForm() {
 
  {/* Job Description Snapshot */}
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Archived Job Description (Snapshot Teks Lowongan)
  </label>
  <textarea
@@ -298,14 +298,14 @@ function NewApplicationForm() {
  <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200">
  <Link
  href="/applications"
- className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 :bg-slate-800 transition-colors"
+ className="px-5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 :bg-slate-800 transition-colors"
  >
  Batal
  </Link>
  <button
  type="submit"
  disabled={submitting}
- className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors shadow-lg shadow-indigo-500/25"
+ className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors shadow-lg shadow-indigo-500/25"
  >
  <Save className="w-4 h-4" />
  <span>{submitting ?'Menyimpan...':'Simpan Lamaran'}</span>
@@ -323,7 +323,7 @@ export default function NewApplicationPage() {
  <ArrowLeft className="w-5 h-5" />
  </Link>
  <div>
- <h1 className="text-2xl font-bold text-slate-900">Tambah Lamaran Kerja</h1>
+ <h1 className="text-2xl font-medium text-slate-900">Tambah Lamaran Kerja</h1>
  <p className="text-xs text-slate-500">Catat lamaran baru ke dalam tracker</p>
  </div>
  </div>

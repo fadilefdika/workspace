@@ -18,7 +18,7 @@ export default function FunnelChart({ funnel }: FunnelChartProps) {
 
  return (
  <div className="glass-card p-6 rounded-2xl">
- <h3 className="text-lg font-bold mb-1 text-slate-900">
+ <h3 className="text-lg font-medium mb-1 text-slate-900">
  Funnel Tahapan Lamaran
  </h3>
  <p className="text-xs text-slate-500 mb-6">

@@ -83,7 +83,7 @@ export default function CompanyDetailPage() {
  <div className="flex items-center space-x-3">
  <Link
  href={`/applications/new?companyId=${company.id}`}
- className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/25"
+ className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 text-white font-medium text-xs shadow-lg shadow-indigo-500/25"
  >
  <Plus className="w-4 h-4" />
  <span>Tambah Lamaran ke Perusahaan Ini</span>
@@ -105,7 +105,7 @@ export default function CompanyDetailPage() {
  <span className="inline-block px-2.5 py-0.5 rounded-full border text-[10px] font-extrabold uppercase tracking-wider mb-2 bg-indigo-500/10 text-indigo-500 border-indigo-500/20">
  {company.priority} Priority
  </span>
- <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+ <h1 className="text-2xl sm:text-3xl font-medium text-slate-900">
  {company.name}
  </h1>
  <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 mt-2">
@@ -130,7 +130,7 @@ export default function CompanyDetailPage() {
  href={company.websiteUrl}
  target="_blank"
  rel="noreferrer"
- className="inline-flex items-center space-x-1.5 text-indigo-500 hover:underline font-semibold"
+ className="inline-flex items-center space-x-1.5 text-indigo-500 hover:underline font-medium"
  >
  <Globe className="w-4 h-4" />
  <span>Official Website</span>
@@ -142,7 +142,7 @@ export default function CompanyDetailPage() {
  href={company.careerPageUrl}
  target="_blank"
  rel="noreferrer"
- className="inline-flex items-center space-x-1.5 text-purple-500 hover:underline font-semibold"
+ className="inline-flex items-center space-x-1.5 text-purple-500 hover:underline font-medium"
  >
  <Briefcase className="w-4 h-4" />
  <span>Career Page</span>
@@ -154,7 +154,7 @@ export default function CompanyDetailPage() {
 
  {/* Deal Breakers Tag List */}
  <div>
- <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400 mb-2">
+ <h3 className="font-medium text-xs uppercase tracking-wider text-slate-400 mb-2">
  Syarat Mutlak / Deal Breakers
  </h3>
  <DealBreakerTags dealBreakers={company.dealBreakers} />
@@ -163,10 +163,10 @@ export default function CompanyDetailPage() {
  {/* Research Notes */}
  <div className="space-y-2 pt-4 border-t border-slate-200">
  <div className="flex items-center justify-between">
- <h3 className="font-bold text-sm text-slate-900">Catatan Riset Pribadi</h3>
+ <h3 className="font-medium text-sm text-slate-900">Catatan Riset Pribadi</h3>
  <button
  onClick={() => setEditingNotes(!editingNotes)}
- className="text-xs text-indigo-500 hover:underline font-bold"
+ className="text-xs text-indigo-500 hover:underline font-medium"
  >
  {editingNotes ?'Batal':'Edit Catatan'}
  </button>
@@ -181,7 +181,7 @@ export default function CompanyDetailPage() {
  />
  <button
  onClick={handleSaveNotes}
- className="inline-flex items-center space-x-1 px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-bold text-xs"
+ className="inline-flex items-center space-x-1 px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-medium text-xs"
  >
  <Save className="w-3.5 h-3.5" />
  <span>Simpan Riset</span>
@@ -198,7 +198,7 @@ export default function CompanyDetailPage() {
  {/* Application History for this company */}
  <div className="glass-card p-6 sm:p-8 rounded-2xl space-y-4">
  <div className="flex items-center justify-between">
- <h3 className="font-bold text-lg text-slate-900">Riwayat Lamaran</h3>
+ <h3 className="font-medium text-lg text-slate-900">Riwayat Lamaran</h3>
  <span className="text-xs text-slate-400 font-medium">
  Total: {company.applications?.length || 0} Lamaran
  </span>
@@ -216,24 +216,24 @@ export default function CompanyDetailPage() {
  className="p-4 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-4 hover:border-indigo-500/40 transition-all"
  >
  <div>
- <Link href={`/applications/${app.id}`} className="font-bold text-sm text-slate-900 hover:text-indigo-500">
+ <Link href={`/applications/${app.id}`} className="font-medium text-sm text-slate-900 hover:text-indigo-500">
  {app.position}
  </Link>
  <div className="flex items-center space-x-2 text-xs text-slate-500 mt-1">
  <Calendar className="w-3.5 h-3.5 text-slate-400" />
  <span>Apply: {new Date(app.appliedDate).toLocaleDateString('id-ID')}</span>
  <span>•</span>
- <span className="uppercase font-semibold">{app.source}</span>
+ <span className="uppercase font-medium">{app.source}</span>
  </div>
  </div>
 
  <div className="flex items-center space-x-3">
- <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+ <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
  {app.status}
  </span>
  <Link
  href={`/applications/${app.id}`}
- className="text-xs font-bold text-indigo-500 hover:underline"
+ className="text-xs font-medium text-indigo-500 hover:underline"
  >
  Detail →
  </Link>

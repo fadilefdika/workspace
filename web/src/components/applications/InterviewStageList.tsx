@@ -68,14 +68,14 @@ export default function InterviewStageList({ applicationId, stages, onRefresh }:
  <div className="glass-card p-6 rounded-2xl">
  <div className="flex items-center justify-between mb-6">
  <div>
- <h3 className="text-lg font-bold text-slate-900">Tahapan Interview</h3>
+ <h3 className="text-lg font-medium text-slate-900">Tahapan Interview</h3>
  <p className="text-xs text-slate-500">
  Timeline dan catatan hasil tiap ronde wawancara
  </p>
  </div>
  <button
  onClick={() => setShowAddForm(!showAddForm)}
- className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors"
+ className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors"
  >
  <Plus className="w-4 h-4" />
  <span>Tambah Ronde</span>
@@ -84,7 +84,7 @@ export default function InterviewStageList({ applicationId, stages, onRefresh }:
 
  {showAddForm && (
  <form onSubmit={handleAddStage} className="p-4 rounded-xl bg-slate-100 mb-6 space-y-3 border border-slate-300">
- <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-500">Tambah Ronde Baru</h4>
+ <h4 className="text-xs font-medium uppercase tracking-wider text-indigo-500">Tambah Ronde Baru</h4>
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
  <div>
  <label className="block text-xs font-medium text-slate-600 mb-1">Nama Ronde</label>
@@ -118,7 +118,7 @@ export default function InterviewStageList({ applicationId, stages, onRefresh }:
  <button
  type="submit"
  disabled={loading}
- className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
+ className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs"
  >
  Simpan
  </button>
@@ -144,22 +144,22 @@ export default function InterviewStageList({ applicationId, stages, onRefresh }:
 
  <div className="p-4 rounded-xl glass-card border border-slate-200">
  <div className="flex items-center justify-between">
- <h4 className="font-bold text-sm text-slate-900">{stage.stageName}</h4>
+ <h4 className="font-medium text-sm text-slate-900">{stage.stageName}</h4>
  <div>
  {stage.outcome ==='PASSED'&& (
- <span className="inline-flex items-center space-x-1 text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+ <span className="inline-flex items-center space-x-1 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
  <CheckCircle className="w-3.5 h-3.5" />
  <span>PASSED</span>
  </span>
  )}
  {stage.outcome ==='FAILED'&& (
- <span className="inline-flex items-center space-x-1 text-xs font-bold text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20">
+ <span className="inline-flex items-center space-x-1 text-xs font-medium text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20">
  <XCircle className="w-3.5 h-3.5" />
  <span>FAILED</span>
  </span>
  )}
  {stage.outcome ==='PENDING'&& (
- <span className="inline-flex items-center space-x-1 text-xs font-bold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+ <span className="inline-flex items-center space-x-1 text-xs font-medium text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
  <Clock className="w-3.5 h-3.5" />
  <span>PENDING</span>
  </span>
@@ -208,7 +208,7 @@ export default function InterviewStageList({ applicationId, stages, onRefresh }:
  type="button"
  onClick={() => handleUpdateStage(stage.id)}
  disabled={loading}
- className="inline-flex items-center space-x-1 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
+ className="inline-flex items-center space-x-1 px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs"
  >
  <Save className="w-3.5 h-3.5" />
  <span>Simpan Update</span>

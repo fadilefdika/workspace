@@ -51,7 +51,7 @@ export default function FollowUpDraftModal({ applicationId, followUpCount, onFol
  <button
  onClick={handleGenerate}
  disabled={isDisabled || loading}
- className={`inline-flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md ${
+ className={`inline-flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-medium transition-all shadow-md ${
  isDisabled
  ?'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none'
  :'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-500/20'
@@ -76,7 +76,7 @@ export default function FollowUpDraftModal({ applicationId, followUpCount, onFol
  <Sparkles className="w-5 h-5 text-indigo-500" />
  </div>
  <div>
- <h3 className="text-lg font-bold text-slate-900">Draft Pesan Follow-up</h3>
+ <h3 className="text-lg font-medium text-slate-900">Draft Pesan Follow-up</h3>
  <p className="text-xs text-slate-500">
  Penggunaan Follow-up: {followUpCount}/2
  </p>
@@ -103,7 +103,7 @@ export default function FollowUpDraftModal({ applicationId, followUpCount, onFol
  </p>
  <button
  onClick={handleCopy}
- className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors"
+ className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors"
  >
  {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
  <span>{copied ?'Tersalin!':'Salin Teks'}</span>

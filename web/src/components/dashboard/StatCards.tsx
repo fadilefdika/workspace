@@ -48,7 +48,7 @@ export default function StatCards({ summary }: StatCardsProps) {
                 <p className="text-2xl font-extrabold text-slate-900">
                   {stat.value}
                 </p>
-                <div className={`px-2 py-1 rounded-md text-xs font-bold ${stat.bgColor}`}>
+                <div className={`px-2 py-1 rounded-md text-xs font-medium ${stat.bgColor}`}>
                   {stat.value !== 0 ? 'Aktif' : '-'}
                 </div>
               </div>

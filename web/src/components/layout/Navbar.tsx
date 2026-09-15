@@ -19,7 +19,7 @@ export default function Navbar() {
  {/* Logo */}
  <Link href="/" className="flex items-center space-x-3">
  <div>
- <span className="text-xl font-semibold text-gray-900 tracking-tight">
+ <span className="text-xl font-medium text-gray-900 tracking-tight">
  Workspace
  </span>
  </div>

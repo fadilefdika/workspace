@@ -67,13 +67,13 @@ export default function NewCompanyPage() {
  <ArrowLeft className="w-5 h-5" />
  </Link>
  <div>
- <h1 className="text-2xl font-bold text-slate-900">Tambah Perusahaan Target</h1>
+ <h1 className="text-2xl font-medium text-slate-900">Tambah Perusahaan Target</h1>
  <p className="text-xs text-slate-500">Tambahkan daftar perusahaan incaran baru</p>
  </div>
  </div>
 
  {errorMsg && (
- <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-semibold">
+ <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-medium">
  {errorMsg}
  </div>
  )}
@@ -82,7 +82,7 @@ export default function NewCompanyPage() {
  {/* Name & Priority */}
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  <div className="sm:col-span-2">
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Nama Perusahaan *
  </label>
  <input
@@ -96,7 +96,7 @@ export default function NewCompanyPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Prioritas Target
  </label>
  <select
@@ -114,7 +114,7 @@ export default function NewCompanyPage() {
  {/* Industry & Location */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Industri / Bidang
  </label>
  <input
@@ -127,7 +127,7 @@ export default function NewCompanyPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Kota / Lokasi Kantor
  </label>
  <input
@@ -143,7 +143,7 @@ export default function NewCompanyPage() {
  {/* Links */}
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Website Resmi
  </label>
  <input
@@ -156,7 +156,7 @@ export default function NewCompanyPage() {
  </div>
 
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Career Page Link
  </label>
  <input
@@ -171,7 +171,7 @@ export default function NewCompanyPage() {
 
  {/* Deal Breakers Tag Input */}
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Syarat Mutlak / Deal Breakers (Opsional)
  </label>
  <div className="flex gap-2 mb-2">
@@ -191,7 +191,7 @@ export default function NewCompanyPage() {
  <button
  type="button"
  onClick={handleAddTag}
- className="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold text-xs"
+ className="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 hover:bg-slate-300 font-medium text-xs"
  >
  + Tag
  </button>
@@ -201,7 +201,7 @@ export default function NewCompanyPage() {
  {dealBreakers.map((tag) => (
  <span
  key={tag}
- className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-500 border border-rose-500/20"
+ className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-500 border border-rose-500/20"
  >
  <span>{tag}</span>
  <button type="button" onClick={() => handleRemoveTag(tag)} className="hover:text-rose-700 ml-1">
@@ -215,7 +215,7 @@ export default function NewCompanyPage() {
 
  {/* Research Notes */}
  <div>
- <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+ <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Catatan Riset Pribadi
  </label>
  <textarea
@@ -231,14 +231,14 @@ export default function NewCompanyPage() {
  <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200">
  <Link
  href="/companies"
- className="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 :bg-slate-800 transition-colors"
+ className="px-5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 :bg-slate-800 transition-colors"
  >
  Batal
  </Link>
  <button
  type="submit"
  disabled={submitting}
- className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors shadow-lg shadow-indigo-500/25"
+ className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors shadow-lg shadow-indigo-500/25"
  >
  <Save className="w-4 h-4" />
  <span>{submitting ?'Menyimpan...':'Simpan Perusahaan'}</span>

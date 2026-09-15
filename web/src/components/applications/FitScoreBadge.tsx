@@ -27,7 +27,7 @@ export default function FitScoreBadge({ score, notes }: FitScoreBadgeProps) {
  <button
  onClick={() => notes && setShowNotes(!showNotes)}
  type="button"
- className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full border text-xs font-bold transition-transform hover:scale-105 ${colorClasses}`}
+ className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-transform hover:scale-105 ${colorClasses}`}
  >
  <Target className="w-3.5 h-3.5" />
  <span>Fit Score: {score}%</span>
@@ -36,7 +36,7 @@ export default function FitScoreBadge({ score, notes }: FitScoreBadgeProps) {
 
  {showNotes && notes && (
  <div className="absolute z-20 left-0 top-8 w-64 p-3 rounded-xl glass-card border border-slate-700 shadow-xl text-xs text-slate-200">
- <div className="font-bold text-slate-100 mb-1 flex items-center justify-between">
+ <div className="font-medium text-slate-100 mb-1 flex items-center justify-between">
  <span>Catatan Kecocokan</span>
  <button onClick={() => setShowNotes(false)} className="text-slate-400 hover:text-white">
  ✕

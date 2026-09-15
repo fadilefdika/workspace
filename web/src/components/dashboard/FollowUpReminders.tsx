@@ -14,7 +14,7 @@ export default function FollowUpReminders({ followUps }: FollowUpRemindersProps)
  <div className="glass-card p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5">
  <div className="flex items-center space-x-3 text-emerald-600">
  <AlertCircle className="w-5 h-5" />
- <h3 className="font-semibold text-sm">Tidak ada jadwal follow-up mendesak</h3>
+ <h3 className="font-medium text-sm">Tidak ada jadwal follow-up mendesak</h3>
  </div>
  <p className="text-xs text-slate-500 mt-1">
  Semua lamaran kerja Anda dalam status terkontrol.
@@ -28,7 +28,7 @@ export default function FollowUpReminders({ followUps }: FollowUpRemindersProps)
  <div className="flex items-center justify-between mb-4">
  <div className="flex items-center space-x-2 text-amber-600">
  <AlertCircle className="w-5 h-5 animate-pulse" />
- <h3 className="font-bold text-base">Pengingat Follow-up ({followUps.length})</h3>
+ <h3 className="font-medium text-base">Pengingat Follow-up ({followUps.length})</h3>
  </div>
  <span className="text-xs text-amber-600 font-medium">
  Mendekati / Jatuh Tempo
@@ -52,7 +52,7 @@ export default function FollowUpReminders({ followUps }: FollowUpRemindersProps)
  <Building2 className="w-4 h-4" />
  </div>
  <div>
- <h4 className="font-bold text-sm text-slate-900">
+ <h4 className="font-medium text-sm text-slate-900">
  {app.position}
  </h4>
  <p className="text-xs text-slate-500">
@@ -62,16 +62,16 @@ export default function FollowUpReminders({ followUps }: FollowUpRemindersProps)
  </div>
 
  <div className="flex items-center justify-between sm:justify-end space-x-4">
- <div className="flex items-center space-x-1.5 text-xs font-semibold">
+ <div className="flex items-center space-x-1.5 text-xs font-medium">
  <Calendar className="w-3.5 h-3.5 text-slate-400" />
- <span className={isOverdue ?'text-rose-600 font-bold':'text-slate-600'}>
+ <span className={isOverdue ?'text-rose-600 font-medium':'text-slate-600'}>
  {dateStr} {isOverdue &&'(Lewat)'}
  </span>
  </div>
 
  <Link
  href={`/applications/${app.id}`}
- className="inline-flex items-center space-x-1 text-xs font-bold text-indigo-600 hover:underline"
+ className="inline-flex items-center space-x-1 text-xs font-medium text-indigo-600 hover:underline"
  >
  <span>Detail</span>
  <ArrowRight className="w-3.5 h-3.5" />
