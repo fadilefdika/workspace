@@ -1,14 +1,5 @@
 export type Priority ='HIGH'|'MEDIUM'|'LOW';
 
-export type ApplicationSource =
- |'LINKEDIN'
- |'JOBSTREET'
- |'GLINTS'
- |'COMPANY_WEBSITE'
- |'REFERRAL'
- |'CAREER_FAIR'
- |'OTHER';
-
 export type ApplicationStatus =
  |'APPLIED'
  |'SCREENING'
@@ -54,7 +45,7 @@ export interface Application {
  company?: Company;
  position: string;
  appliedDate: string;
- source: ApplicationSource;
+ source: string;
  applicationLink?: string | null;
  status: ApplicationStatus;
  statusUpdatedAt: string;
@@ -96,7 +87,7 @@ export interface DashboardMonthly {
 
 
 // Content Planner Types
-export type ContentStatus = 'IDEA' | 'DRAFTING' | 'REVIEW' | 'SCHEDULED' | 'PUBLISHED';
+export type ContentStatus = 'IDEA' | 'DRAFT' | 'READY' | 'PUBLISHED';
 export type Platform = 'LINKEDIN' | 'THREADS';
 
 export interface ContentItem {
@@ -104,10 +95,16 @@ export interface ContentItem {
   title: string;
   description?: string | null;
   contentBody?: string | null;
+  themeTag?: string | null;
   status: ContentStatus;
   platform: Platform;
   targetDate?: string | null;
   publishUrl?: string | null;
+  publishedDate?: string | null;
+  metricsReach?: number | null;
+  metricsLikes?: number | null;
+  metricsComments?: number | null;
+  metricsShares?: number | null;
   createdAt: string;
   updatedAt: string;
 }

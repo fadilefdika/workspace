@@ -20,6 +20,7 @@
     "seed": "ts-node src/modules/job-tracker/prisma/seed.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^5.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

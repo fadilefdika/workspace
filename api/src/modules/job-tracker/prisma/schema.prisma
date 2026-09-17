@@ -33,7 +33,7 @@ model Application {
   company                Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   position               String
   appliedDate            DateTime          @map("applied_date")
-  source                 ApplicationSource
+  source                 String
   applicationLink        String?           @map("application_link")
   status                 ApplicationStatus @default(APPLIED)
   statusUpdatedAt        DateTime          @default(now()) @map("status_updated_at")
@@ -75,15 +75,7 @@ enum Priority {
   LOW
 }
 
-enum ApplicationSource {
-  LINKEDIN
-  JOBSTREET
-  GLINTS
-  COMPANY_WEBSITE
-  REFERRAL
-  CAREER_FAIR
-  OTHER
-}
+
 
 enum ApplicationStatus {
   APPLIED

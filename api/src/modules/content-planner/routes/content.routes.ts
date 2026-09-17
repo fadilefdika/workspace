@@ -6,6 +6,8 @@ const controller = new ContentController();
 
 router.get('/', controller.getAll);
 router.post('/', controller.create);
+router.post('/enhance', controller.enhanceText);
+router.get('/dashboard-stats', controller.getDashboardStats);
 router.get('/:id', controller.getById);
 router.patch('/:id', controller.update);
 router.delete('/:id', controller.delete);

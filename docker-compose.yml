@@ -25,6 +25,7 @@ services:
       PORT: ${API_PORT:-4000}
       DATABASE_URL_JOB_TRACKER: ${DATABASE_URL_JOB_TRACKER:-postgresql://workspace:changeme@postgres:5432/job_tracker}
       DATABASE_URL_CONTENT_PLANNER: ${DATABASE_URL_CONTENT_PLANNER:-postgresql://workspace:changeme@postgres:5432/content_planner}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     volumes:
       - ./api:/app
       - /app/node_modules

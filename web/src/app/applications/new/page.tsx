@@ -1,16 +1,16 @@
 'use client';
 
-import { Suspense, useEffect, useState } from'react';
-import { useRouter, useSearchParams } from'next/navigation';
-import { apiClient } from'@/lib/api-client';
-import { Company, ApplicationSource, ApplicationStatus } from'@/types';
-import { ArrowLeft, Save } from'lucide-react';
-import Link from'next/link';
+import { Suspense, useEffect, useState, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { apiClient } from '@/lib/api-client';
+import { Company, ApplicationStatus } from '@/types';
+import { ArrowLeft, Save, Plus, Check } from 'lucide-react';
+import Link from 'next/link';
 
 function NewApplicationForm() {
  const router = useRouter();
  const searchParams = useSearchParams();
- const initialCompanyId = searchParams.get('companyId') ||'';
+ const initialCompanyId = searchParams.get('companyId') || '';
 
  const [companies, setCompanies] = useState<Company[]>([]);
  const [loading, setLoading] = useState(true);
@@ -19,28 +19,55 @@ function NewApplicationForm() {
 
  const [formData, setFormData] = useState({
  companyId: initialCompanyId,
- position:'',
+ newCompanyName: '',
+ position: '',
  appliedDate: new Date().toISOString().split('T')[0],
- source:'LINKEDIN'as ApplicationSource,
- applicationLink:'',
- status:'APPLIED'as ApplicationStatus,
- contactPerson:'',
- contactInfo:'',
- nextFollowUp:'',
- salaryRange:'',
- archivedJobDescription:'',
- fitScore:''as string | number,
- fitNotes:'',
- notes:'',
+ source: 'LinkedIn',
+ applicationLink: '',
+ status: 'APPLIED' as ApplicationStatus,
+ contactPerson: '',
+ contactInfo: '',
+ nextFollowUp: '',
+ salaryRange: '',
+ archivedJobDescription: '',
+ fitScore: '' as string | number,
+ fitNotes: '',
+ notes: '',
  });
+
+ const [companySearchQuery, setCompanySearchQuery] = useState('');
+ const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+ const dropdownRef = useRef<HTMLDivElement>(null);
+
+ const [sourceSearchQuery, setSourceSearchQuery] = useState('LinkedIn');
+ const [isSourceDropdownOpen, setIsSourceDropdownOpen] = useState(false);
+ const sourceDropdownRef = useRef<HTMLDivElement>(null);
+ const PREDEFINED_SOURCES = ['LinkedIn', 'Jobstreet', 'Glints', 'Website Perusahaan', 'Referral', 'Career Fair', 'Kalibrr', 'Tech in Asia'];
+
+ useEffect(() => {
+ const handleClickOutside = (event: MouseEvent) => {
+ if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+ setIsDropdownOpen(false);
+ }
+ if (sourceDropdownRef.current && !sourceDropdownRef.current.contains(event.target as Node)) {
+ setIsSourceDropdownOpen(false);
+ }
+ };
+ document.addEventListener('mousedown', handleClickOutside);
+ return () => document.removeEventListener('mousedown', handleClickOutside);
+ }, []);
 
  useEffect(() => {
  async function loadCompanies() {
  try {
  const data = await apiClient.get<Company[]>('/companies');
  setCompanies(data);
- if (!initialCompanyId && data.length > 0) {
+ if (initialCompanyId) {
+ const comp = data.find(c => c.id === initialCompanyId);
+ if (comp) setCompanySearchQuery(comp.name);
+ } else if (data.length > 0) {
  setFormData((prev) => ({ ...prev, companyId: data[0].id }));
+ setCompanySearchQuery(data[0].name);
  }
  } catch (err) {
  console.error('Failed to load companies', err);
@@ -53,7 +80,7 @@ function NewApplicationForm() {
 
  const handleSubmit = async (e: React.FormEvent) => {
  e.preventDefault();
- if (!formData.companyId || !formData.position || !formData.appliedDate) {
+ if ((!formData.companyId && !formData.newCompanyName) || !formData.position || !formData.appliedDate) {
  setErrorMsg('Perusahaan, posisi, dan tanggal apply wajib diisi');
  return;
  }
@@ -64,12 +91,12 @@ function NewApplicationForm() {
  try {
  await apiClient.post('/applications', {
  ...formData,
- fitScore: formData.fitScore !==''? Number(formData.fitScore) : null,
+ fitScore: formData.fitScore !== '' ? Number(formData.fitScore) : null,
  nextFollowUp: formData.nextFollowUp ? new Date(formData.nextFollowUp).toISOString() : null,
  });
  router.push('/applications');
  } catch (err: any) {
- setErrorMsg(err.message ||'Gagal menyimpan lamaran');
+ setErrorMsg(err.message || 'Gagal menyimpan lamaran');
  } finally {
  setSubmitting(false);
  }
@@ -97,19 +124,53 @@ function NewApplicationForm() {
  <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Perusahaan Target *
  </label>
- <select
- value={formData.companyId}
- onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
+ <div className="relative" ref={dropdownRef}>
+ <input
+ type="text"
+ value={companySearchQuery}
+ onChange={(e) => {
+ setCompanySearchQuery(e.target.value);
+ setIsDropdownOpen(true);
+ setFormData({ ...formData, companyId: '', newCompanyName: e.target.value });
+ }}
+ onFocus={() => setIsDropdownOpen(true)}
+ placeholder="Ketik nama perusahaan..."
  className="w-full px-4 py-2.5 rounded-xl text-xs bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500"
- required
+ required={!formData.companyId && !formData.newCompanyName}
+ />
+ {isDropdownOpen && (
+ <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+ {companySearchQuery.trim() && !companies.some(c => c.name.toLowerCase() === companySearchQuery.toLowerCase()) && (
+ <button
+ type="button"
+ onClick={() => {
+ setFormData({ ...formData, companyId: '', newCompanyName: companySearchQuery.trim() });
+ setIsDropdownOpen(false);
+ }}
+ className="w-full text-left px-4 py-2.5 text-xs hover:bg-slate-50 text-indigo-600 flex items-center space-x-2 border-b border-slate-100"
  >
- <option value="" disabled>Pilih Perusahaan</option>
- {companies.map((c) => (
- <option key={c.id} value={c.id}>
- {c.name}
- </option>
+ <Plus className="w-3.5 h-3.5" />
+ <span className="font-medium">Tambahkan "{companySearchQuery.trim()}"</span>
+ </button>
+ )}
+ {companies.filter(c => c.name.toLowerCase().includes(companySearchQuery.toLowerCase())).map(c => (
+ <button
+ key={c.id}
+ type="button"
+ onClick={() => {
+ setFormData({ ...formData, companyId: c.id, newCompanyName: '' });
+ setCompanySearchQuery(c.name);
+ setIsDropdownOpen(false);
+ }}
+ className="w-full text-left px-4 py-2.5 text-xs hover:bg-slate-50 text-slate-700 flex items-center justify-between"
+ >
+ <span>{c.name}</span>
+ {formData.companyId === c.id && <Check className="w-3.5 h-3.5 text-indigo-600" />}
+ </button>
  ))}
- </select>
+ </div>
+ )}
+ </div>
  </div>
 
  <div>
@@ -146,19 +207,53 @@ function NewApplicationForm() {
  <label className="block text-xs font-medium uppercase tracking-wider text-slate-600 mb-2">
  Sumber Lowongan *
  </label>
- <select
- value={formData.source}
- onChange={(e) => setFormData({ ...formData, source: e.target.value as ApplicationSource })}
+ <div className="relative" ref={sourceDropdownRef}>
+ <input
+ type="text"
+ value={sourceSearchQuery}
+ onChange={(e) => {
+ setSourceSearchQuery(e.target.value);
+ setIsSourceDropdownOpen(true);
+ setFormData({ ...formData, source: e.target.value });
+ }}
+ onFocus={() => setIsSourceDropdownOpen(true)}
+ placeholder="Ketik sumber lowongan..."
  className="w-full px-4 py-2.5 rounded-xl text-xs bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-indigo-500"
+ required
+ />
+ {isSourceDropdownOpen && (
+ <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+ {sourceSearchQuery.trim() && !PREDEFINED_SOURCES.some(s => s.toLowerCase() === sourceSearchQuery.toLowerCase()) && (
+ <button
+ type="button"
+ onClick={() => {
+ setFormData({ ...formData, source: sourceSearchQuery.trim() });
+ setIsSourceDropdownOpen(false);
+ }}
+ className="w-full text-left px-4 py-2.5 text-xs hover:bg-slate-50 text-indigo-600 flex items-center space-x-2 border-b border-slate-100"
  >
- <option value="LINKEDIN">LinkedIn</option>
- <option value="JOBSTREET">Jobstreet</option>
- <option value="GLINTS">Glints</option>
- <option value="COMPANY_WEBSITE">Website Perusahaan</option>
- <option value="REFERRAL">Referral</option>
- <option value="CAREER_FAIR">Career Fair</option>
- <option value="OTHER">Lainnya</option>
- </select>
+ <Plus className="w-3.5 h-3.5" />
+ <span className="font-medium">Tambahkan "{sourceSearchQuery.trim()}"</span>
+ </button>
+ )}
+ {PREDEFINED_SOURCES.filter(s => s.toLowerCase().includes(sourceSearchQuery.toLowerCase())).map(s => (
+ <button
+ key={s}
+ type="button"
+ onClick={() => {
+ setFormData({ ...formData, source: s });
+ setSourceSearchQuery(s);
+ setIsSourceDropdownOpen(false);
+ }}
+ className="w-full text-left px-4 py-2.5 text-xs hover:bg-slate-50 text-slate-700 flex items-center justify-between"
+ >
+ <span>{s}</span>
+ {formData.source === s && <Check className="w-3.5 h-3.5 text-indigo-600" />}
+ </button>
+ ))}
+ </div>
+ )}
+ </div>
  </div>
 
  <div>

@@ -8,10 +8,11 @@ const router = Router();
 
 const createApplicationSchema = z.object({
   body: z.object({
-    companyId: z.string().min(1, 'Company ID is required'),
+    companyId: z.string().optional().or(z.literal('')),
+    newCompanyName: z.string().optional().or(z.literal('')),
     position: z.string().min(1, 'Position is required'),
     appliedDate: z.string().min(1, 'Applied date is required'),
-    source: z.enum(['LINKEDIN', 'JOBSTREET', 'GLINTS', 'COMPANY_WEBSITE', 'REFERRAL', 'CAREER_FAIR', 'OTHER']),
+    source: z.string().min(1, 'Source is required'),
     applicationLink: z.string().optional().or(z.literal('')),
     status: z.enum(['APPLIED', 'SCREENING', 'INTERVIEW_HR', 'INTERVIEW_USER', 'OFFER', 'ACCEPTED', 'REJECTED', 'GHOSTED']).optional(),
     contactPerson: z.string().optional(),
@@ -23,6 +24,9 @@ const createApplicationSchema = z.object({
     archivedJobDescription: z.string().optional(),
     fitScore: z.number().min(0).max(100).optional().nullable(),
     fitNotes: z.string().optional(),
+  }).refine((data) => data.companyId || data.newCompanyName, {
+    message: "Either companyId or newCompanyName is required",
+    path: ["companyId"],
   }),
 });
 
@@ -31,7 +35,7 @@ const updateApplicationSchema = z.object({
     companyId: z.string().optional(),
     position: z.string().optional(),
     appliedDate: z.string().optional(),
-    source: z.enum(['LINKEDIN', 'JOBSTREET', 'GLINTS', 'COMPANY_WEBSITE', 'REFERRAL', 'CAREER_FAIR', 'OTHER']).optional(),
+    source: z.string().optional(),
     applicationLink: z.string().optional().or(z.literal('')),
     status: z.enum(['APPLIED', 'SCREENING', 'INTERVIEW_HR', 'INTERVIEW_USER', 'OFFER', 'ACCEPTED', 'REJECTED', 'GHOSTED']).optional(),
     contactPerson: z.string().optional(),

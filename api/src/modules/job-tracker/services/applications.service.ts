@@ -1,12 +1,13 @@
 import prisma from '../lib/prisma-client';
 import { AppError } from '../../../shared/middlewares/errorHandler';
-import { ApplicationSource, ApplicationStatus } from '@prisma/client';
+import { ApplicationStatus } from '@prisma/client';
 
 export interface CreateApplicationInput {
-  companyId: string;
+  companyId?: string;
+  newCompanyName?: string;
   position: string;
   appliedDate: string | Date;
-  source: ApplicationSource;
+  source: string;
   applicationLink?: string;
   status?: ApplicationStatus;
   contactPerson?: string;
@@ -24,7 +25,7 @@ export interface UpdateApplicationInput {
   companyId?: string;
   position?: string;
   appliedDate?: string | Date;
-  source?: ApplicationSource;
+  source?: string;
   applicationLink?: string;
   status?: ApplicationStatus;
   contactPerson?: string;
@@ -43,7 +44,7 @@ export class ApplicationsService {
   static async getAll(query: {
     status?: ApplicationStatus;
     companyId?: string;
-    source?: ApplicationSource;
+    source?: string;
     sort?: string;
     page?: number;
     limit?: number;
@@ -106,14 +107,35 @@ export class ApplicationsService {
   }
 
   static async create(data: CreateApplicationInput) {
-    const companyExists = await prisma.company.findUnique({ where: { id: data.companyId } });
-    if (!companyExists) {
-      throw new AppError('Company not found', 404, 'NOT_FOUND');
+    let finalCompanyId = data.companyId;
+
+    if (data.newCompanyName) {
+      const slug = data.newCompanyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const existingCompany = await prisma.company.findFirst({ where: { slug } });
+      
+      if (existingCompany) {
+        finalCompanyId = existingCompany.id;
+      } else {
+        const newCompany = await prisma.company.create({
+          data: {
+            name: data.newCompanyName,
+            slug,
+          }
+        });
+        finalCompanyId = newCompany.id;
+      }
+    } else if (finalCompanyId) {
+      const companyExists = await prisma.company.findUnique({ where: { id: finalCompanyId } });
+      if (!companyExists) {
+        throw new AppError('Company not found', 404, 'NOT_FOUND');
+      }
+    } else {
+      throw new AppError('Either companyId or newCompanyName must be provided', 400, 'BAD_REQUEST');
     }
 
     const application = await prisma.application.create({
       data: {
-        companyId: data.companyId,
+        companyId: finalCompanyId!,
         position: data.position,
         appliedDate: new Date(data.appliedDate),
         source: data.source,

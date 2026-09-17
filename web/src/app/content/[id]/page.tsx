@@ -25,6 +25,12 @@ export default function ContentDetailPage() {
   const [targetDate, setTargetDate] = useState('');
   const [publishUrl, setPublishUrl] = useState('');
 
+  // Metrics
+  const [metricsReach, setMetricsReach] = useState<number | ''>('');
+  const [metricsLikes, setMetricsLikes] = useState<number | ''>('');
+  const [metricsComments, setMetricsComments] = useState<number | ''>('');
+  const [metricsShares, setMetricsShares] = useState<number | ''>('');
+
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -40,6 +46,10 @@ export default function ContentDetailPage() {
           const date = new Date(data.targetDate);
           setTargetDate(date.toISOString().split('T')[0]);
         }
+        setMetricsReach(data.metricsReach ?? '');
+        setMetricsLikes(data.metricsLikes ?? '');
+        setMetricsComments(data.metricsComments ?? '');
+        setMetricsShares(data.metricsShares ?? '');
       } catch (err: any) {
         setError(err.message || 'Gagal memuat konten');
       } finally {
@@ -61,6 +71,10 @@ export default function ContentDetailPage() {
         platform,
         publishUrl,
         targetDate: targetDate ? new Date(targetDate).toISOString() : null,
+        metricsReach: metricsReach !== '' ? Number(metricsReach) : null,
+        metricsLikes: metricsLikes !== '' ? Number(metricsLikes) : null,
+        metricsComments: metricsComments !== '' ? Number(metricsComments) : null,
+        metricsShares: metricsShares !== '' ? Number(metricsShares) : null,
       });
       // Optionally show success toast
     } catch (err: any) {
@@ -111,14 +125,14 @@ export default function ContentDetailPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Edit Konten</h1>
+            <h1 className="text-2xl leading-tight font-semibold text-ink">Edit Konten</h1>
           </div>
         </div>
         
         <div className="flex items-center space-x-2">
           <button
             onClick={handleDelete}
-            className="p-2.5 rounded-xl text-rose-500 hover:bg-rose-50 transition-colors"
+            className="p-2.5 rounded-full text-danger hover:bg-black/[0.04] transition-colors"
             title="Hapus Konten"
           >
             <Trash2 className="w-4 h-4" />
@@ -126,7 +140,7 @@ export default function ContentDetailPage() {
           <button
             onClick={() => handleUpdate()}
             disabled={saving}
-            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium text-sm transition-all shadow-sm"
+            className="inline-flex items-center justify-center space-x-2 rounded-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-white text-[15px] font-medium px-5 py-2.5 transition-colors duration-200 focus-visible:ring-4 focus-visible:ring-accent/25 outline-none"
           >
             {saving ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -189,9 +203,8 @@ export default function ContentDetailPage() {
                 className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-sm font-medium bg-slate-50"
               >
                 <option value="IDEA">Idea</option>
-                <option value="DRAFTING">Drafting</option>
-                <option value="REVIEW">Review</option>
-                <option value="SCHEDULED">Scheduled</option>
+                <option value="DRAFT">Draft</option>
+                <option value="READY">Siap Publish</option>
                 <option value="PUBLISHED">Published</option>
               </select>
             </div>
@@ -243,6 +256,51 @@ export default function ContentDetailPage() {
                 className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-sm bg-slate-50"
               />
             </div>
+            
+            {status === 'PUBLISHED' && (
+              <>
+                <hr className="border-slate-100" />
+                <h4 className="text-sm font-bold text-slate-900 mb-1">Performance Tracker</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Reach</label>
+                    <input
+                      type="number"
+                      value={metricsReach}
+                      onChange={(e) => setMetricsReach(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-sm bg-slate-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Likes</label>
+                    <input
+                      type="number"
+                      value={metricsLikes}
+                      onChange={(e) => setMetricsLikes(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-sm bg-slate-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Comments</label>
+                    <input
+                      type="number"
+                      value={metricsComments}
+                      onChange={(e) => setMetricsComments(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-sm bg-slate-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Shares/Saves</label>
+                    <input
+                      type="number"
+                      value={metricsShares}
+                      onChange={(e) => setMetricsShares(e.target.value ? Number(e.target.value) : '')}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-sm bg-slate-50"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

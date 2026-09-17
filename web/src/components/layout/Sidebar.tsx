@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Briefcase, Building2, PenTool } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Building2, PenTool, Calendar, BarChart2 } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -11,7 +11,7 @@ export default function Sidebar() {
     {
       title: 'Find Job',
       items: [
-        { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+        { name: 'Dashboard', href: '/', icon: LayoutDashboard, exact: true },
         { name: 'Applications', href: '/applications', icon: Briefcase },
         { name: 'Companies', href: '/companies', icon: Building2 },
       ],
@@ -19,7 +19,9 @@ export default function Sidebar() {
     {
       title: 'Content',
       items: [
-        { name: 'Content Planner', href: '/content', icon: PenTool },
+        { name: 'Dashboard', href: '/content/dashboard', icon: BarChart2 },
+        { name: 'Kanban Board', href: '/content', icon: PenTool, exact: true },
+        { name: 'Calendar', href: '/content/calendar', icon: Calendar },
       ],
     },
   ];
@@ -38,7 +40,9 @@ export default function Sidebar() {
             </h2>
             <div className="space-y-1">
               {group.items.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+                const isActive = item.exact 
+                  ? pathname === item.href 
+                  : (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href)));
                 const Icon = item.icon;
                 
                 return (

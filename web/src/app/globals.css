@@ -7,23 +7,23 @@ html {
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --card-bg: #ffffff;
-  --card-border: #e2e8f0;
+  --background: #F5F5F7;
+  --foreground: #1D1D1F;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #F5F5F7;
+  }
 }
 
 .glass-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  @apply bg-white/70 dark:bg-[#1C1C1E]/70 backdrop-blur-xl border border-black/5 dark:border-white/10 shadow-card;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  min-height: 100vh;
+  @apply bg-canvas dark:bg-canvas-dark text-ink dark:text-ink-inverted antialiased min-h-screen transition-colors duration-300;
 }
 
 /* Custom Scrollbars */
